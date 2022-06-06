@@ -11,7 +11,7 @@ Here we're going to implement CI/CD (Auto Deployment) in Azure Pipeline using **
 # Introduction
 Here is YAML file as Azure Pipeline for our project in the current repo. You can define multiple pipelines if you have more than one project.
 
-> deployment/pipelines/azure/pipeline.yml
+> deployments/pipelines/azure/pipeline.yml
 
 You can edit this YAML based on your project requirements. The features can include following items:
 
