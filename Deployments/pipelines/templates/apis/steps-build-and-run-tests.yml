@@ -1,0 +1,38 @@
+parameters:
+- name: unitTestProjects
+  type: string
+  default: $(apiFolder)/**/*UnitTests.csproj
+- name: acceptanceTestProjects
+  type: string
+  default: $(apiFolder)/**/*AcceptanceTest?(s).csproj
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Restore Solution'
+  inputs:
+    command: restore
+    projects: '$(apiName).sln'
+    feedsToUse: config
+    nugetConfigPath: 'nuget.config'
+    verbosityRestore: Minimal
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Build Solution'
+  inputs:
+    projects: '$(apiName).sln'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Run Unit Tests'
+  inputs:
+    command: test
+    projects:  ${{parameters.unitTestProjects}}
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --filter "FullyQualifiedName~UnitTests" --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Run Acceptance Tests'
+  inputs:
+    command: test
+    projects:  |
+      ${{ join(' ', parameters.acceptanceTestProjects )}}
+    arguments: '--configuration $(buildConfiguration) --no-restore'

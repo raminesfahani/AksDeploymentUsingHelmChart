@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "test-api.fullname" . }}
+  labels:
+    app: {{ template "test-api.name" . }}
+    chart: {{ template "test-api.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- with .Values.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host.name }}
+      secretName: {{ .Values.ingress.host.tlsSecretName }}
+  rules:
+    - host: {{ .Values.ingress.host.name }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path }}
+            backend:
+              serviceName: {{ template "test-api.fullname" . }}
+              servicePort: {{ .Values.servicePort }}

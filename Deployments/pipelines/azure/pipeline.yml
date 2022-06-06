@@ -1,0 +1,49 @@
+trigger:
+  branches:
+    include:
+    # Add branches you want to trigger the pipeline by
+    - '*'
+  paths:
+    include:
+    # Add paths you want to trigger the pipeline by
+    - '*'
+
+pool:
+  name: Default
+
+workspace:
+  clean: all
+
+variables:
+# I've called the HelmChart as 'TestApi'
+  - name: apiName
+    value: TestApi
+  - name: apiFolder
+    value: TestApi
+  - name: dockerFilePath
+    value: YOUR_DOCKER_FILE_PATH
+  - name: dockerApiName
+    value: test-api
+  - name: artifactApiName
+    value: test-api
+  - name: chartFolder
+    value: Deployments/charts/test-api
+  - template: ../templates/apis/vars.yml
+
+steps:
+  - checkout: self
+    persistCredentials: true
+    env: 
+      GIT_SSH_COMMAND: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+  # Define your templates and steps here
+  - template: ../templates/dotnet/steps-use-dotnet-task.yml
+    parameters:
+      version: $(dotnetVersion)
+  - template: ../templates/apis/steps-build-and-run-tests.yml
+  - template: ../templates/apis/steps-build-and-push-docker.yml
+  - template: ../templates/apis/steps-install-and-pack-helm.yml
+
+  - task: PostBuildCleanup@3
+    displayName: 'Clean Agent Directories'
+    condition: always()

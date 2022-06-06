@@ -1,0 +1,23 @@
+parameters:
+  - name: azureContainerRegistry
+    type: string
+    default: '{"loginServer":"{YOUR_SUBDOMAIN}.azurecr.io", "id" : "{YOUR_REGISTRAR_ID}"}'
+
+steps:
+- task: Docker@2
+  displayName: 'Docker Build container'
+  inputs:
+    command: build
+    dockerFile: '$(dockerFilePath)'
+    buildContext: .
+    containerRegistry: '{Your_Container_Registry}'
+    repository: {Your_Repo_Url}/$(dockerApiName) #For Example: my-company/cloud/test-api 
+    imageName: '{Your_Repo_Url}/$(dockerApiName):$(Build.BuildId)'
+
+- task: Docker@2
+  displayName: 'Docker Push container'
+  inputs:
+    command: 'push'
+    containerRegistry: '{Your_Container_Registry}'
+    repository: {Your_Repo_Url}/$(dockerApiName) #For Example: my-company/cloud/test-api 
+    imageName: '{Your_Repo_Url}/$(dockerApiName):$(Build.BuildId)'

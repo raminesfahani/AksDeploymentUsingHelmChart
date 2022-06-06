@@ -1,0 +1,41 @@
+parameters:
+- name: chartPath
+  type: string
+  default: ''
+- name: destination
+  type: string
+  default: ''
+
+steps:
+# Ensure Helm
+- task: HelmInstaller@0
+  displayName: 'Install Helm 2.16.1'
+  inputs:
+    helmVersion: 2.16.1
+    checkLatestHelmVersion: false
+
+# Helm Init
+- task: HelmDeploy@0
+  displayName: 'Helm init --client-only'
+  inputs:
+    connectionType: None
+    command: init
+    upgradeTiller: false
+    arguments: '--client-only'
+    failOnStderr: true
+
+# Create dir for package
+- script: 'mkdir %DESTINATION% -p'
+  displayName: 'Create directory for package destination'
+  env:
+    Destination: '${{ parameters.destination }}'
+
+# Pack
+- task: HelmDeploy@0
+  displayName: 'Helm package'
+  inputs:
+    command: package
+    chartPath: '${{ parameters.chartPath }}'
+    destination: '${{ parameters.destination }}'
+    save: false
+    failOnStderr: true

@@ -1,0 +1,37 @@
+parameters:
+- name: projectsFolderPath
+  type: string
+  default: ''
+- name: unitTestsProjectsFolderPath
+  type: string
+  default: ''
+
+steps:
+# Restore packages
+- task: DotNetCoreCLI@2
+  displayName: 'Restore projects'
+  inputs:
+    command: restore
+    projects: | 
+      ${{ parameters.projectsFolderPath }}/**/*.csproj
+      ${{ parameters.unitTestsProjectsFolderPath }}/**/*UnitTests.csproj
+    feedsToUse: config
+    nugetConfigPath: 'nuget.config'
+    verbosityRestore: Minimal
+
+# Build Solution
+- task: DotNetCoreCLI@2
+  displayName: 'Build projects'
+  inputs:
+    projects: |
+      ${{ parameters.projectsFolderPath }}/**/*.csproj
+      ${{ parameters.unitTestsProjectsFolderPath }}/**/*UnitTests.csproj
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+# Run Unit tests
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests'
+  inputs:
+    command: test
+    projects: '${{ parameters.unitTestsProjectsFolderPath }}/**/*UnitTests.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-restore'

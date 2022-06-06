@@ -1,0 +1,11 @@
+steps:
+  - template: '../helm/steps-install-and-pack.yml'
+    parameters:
+      chartPath: '$(chartFolder)'
+      destination: $(helmChartPackagePath)
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact HelmPackage'
+    inputs:
+      PathtoPublish: '$(helmChartPackagePath)'
+      ArtifactName: '$(artifactApiName)-api-helm-package'

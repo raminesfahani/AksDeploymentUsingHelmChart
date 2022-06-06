@@ -1,0 +1,11 @@
+parameters:
+  - name: version
+    type: string
+    default: ''
+
+steps:
+# Ensure Dotnet
+- task: UseDotNet@2
+  displayName: 'Use DotNet Sdk ${{ parameters.version }}'
+  inputs:
+    version: ${{ parameters.version }}

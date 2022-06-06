@@ -1,0 +1,7 @@
+variables:  
+# Add your environment variables here
+  buildConfiguration: 'Release'
+  dotnetVersion: '5.0.x'
+  helmChartPackagePath: '$(Build.ArtifactStagingDirectory)/HelmChart'
+  Build.Repository.Clean: true
+
